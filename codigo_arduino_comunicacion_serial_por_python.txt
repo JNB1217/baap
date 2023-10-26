@@ -1,0 +1,23 @@
+int led= 11;
+void setup() {
+  // Initialize serial communication at 9600 baud
+  Serial.begin(9600);
+  pinMode(led,OUTPUT);
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    // If data is available to read
+     char string = Serial.read(); 
+    //char string = Serial.read(); 
+    if (string == '1'){ //b'11111'
+      
+      digitalWrite(led,HIGH);
+      
+      
+    } else{
+      digitalWrite(led,LOW);
+    }
+    Serial.println(string);
+  }
+}
