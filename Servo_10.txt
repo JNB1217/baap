@@ -1,0 +1,44 @@
+//codigo arduino control de servomotores 
+
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
+int led = 2;
+int servoMin = 150; // Valor mínimo (0 grados)
+int servoMax = 600; // Valor máximo (90 grados)
+int servoPos = servoMin;
+
+void setup() {
+  // Inicializar la comunicación serie a 9600 baudios
+  Serial.begin(9600);
+  pwm.begin();
+  pwm.setPWMFreq(50);
+  pinMode(led, OUTPUT);
+  Serial.println("Hello Arduino");
+}
+
+void loop() {
+  if (Serial.available() > 0) {
+    // Si hay datos disponibles para leer
+    char string[1]; // Definir un arreglo de caracteres para almacenar el valor recibido (más el carácter nulo)
+
+    // Leer el dato en forma de string
+    Serial.readBytes(string, 2);
+
+    if (string[0] == '1') {
+
+      pwm.setPWM(0, 0, servoMax);
+      
+      delay(10);
+      digitalWrite(led, HIGH);
+    } else if(string[0] == '0'){
+      pwm.setPWM(0, 0, servoMin);
+      delay(10);
+      digitalWrite(led, LOW);
+    }
+
+    Serial.println(string);
+  }
+}
