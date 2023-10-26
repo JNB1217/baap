@@ -63,9 +63,9 @@ with mp_pose.Pose(
 
             # Extrae los landmarks del pulgar derecho y la muñeca izquierda
             #left_thumb = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_THUMB]
-            right_wrist = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_WRIST]
-            right_elbow = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_ELBOW]
-            right_shoulder = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
+            right_wrist = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_WRIST]
+            right_elbow = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_ELBOW]
+            right_shoulder = pose_results.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
 
             # Convierte las coordenadas normalizadas en coordenadas de píxeles
             right_wrist_x = int(right_wrist.x * width)
@@ -92,16 +92,16 @@ with mp_pose.Pose(
             cv2.line(frame, (right_elbow_x, right_elbow_y), (right_wrist_x, right_wrist_y), (0, 0, 255), 2)
 
         # Realiza la detección de la mano en el cuadro actual
-        
         hand_results = hands.process(frame_rgb)
+        
         if hand_results.multi_hand_landmarks:
             # Filtra la mano derecha
-            left_hand_landmarks = None
+            right_hand_landmarks = None
             for hand_landmarks in hand_results.multi_hand_landmarks:
                 if hand_landmarks.landmark[mp_hands.HandLandmark.WRIST].x > 0.5:
-                    left_hand_landmarks = hand_landmarks
+                    right_hand_landmarks = hand_landmarks
 
-            if left_hand_landmarks:
+            if right_hand_landmarks:
                 
 
                 # Obtén la primera mano detectada (debería ser la mano derecha)
@@ -216,7 +216,7 @@ with mp_pose.Pose(
                     
                 mp_drawing.draw_landmarks(
                     frame,
-                    left_hand_landmarks,
+                    right_hand_landmarks,
                     mp_hands.HAND_CONNECTIONS,
                     mp_drawing_styles.get_default_hand_landmarks_style(),
                     mp_drawing_styles.get_default_hand_connections_style())
@@ -224,7 +224,7 @@ with mp_pose.Pose(
         # Visualización
         cv2.rectangle(frame, (0, 0), (80, 80), (125, 220, 0), -1)
         cv2.putText(frame, fingers_counter, (15, 65), 1, 5, (255, 255, 255), 2)
-
+        
         # Muestra el cuadro de video
         cv2.imshow("Hand and Body Pose Detection", frame)
         # Detiene el bucle cuando se presiona la tecla 'q'
