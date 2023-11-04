@@ -1,9 +1,12 @@
 import cv2
 import mediapipe as mp
 import numpy as np
-import serial as ser
+import serial
 import math as math
 from math import *
+from time import *
+
+#arduino = serial.Serial('COM18  ', 9600)
 
 # Inicializa las bibliotecas de MediaPipe para la mano y la pose del cuerpo
 mp_hands = mp.solutions.hands
@@ -74,24 +77,24 @@ with mp_pose.Pose(
 
             
             # Dibuja un círculo en el punto de la cabeza (nariz)
-            cv2.circle(frame, (head_x, head_y), 5, GREEN, -1)
-            cv2.putText(frame, "HEAD", (head_x, head_y), 1, 1, (255, 255, 255), 2)
+            #cv2.circle(frame, (head_x, head_y), 5, GREEN, -1)
+            #cv2.putText(frame, "HEAD", (head_x, head_y), 1, 1, (255, 255, 255), 2)
 
             # Dibuja un círculo en la muñeca izquierda
-            cv2.circle(frame, (right_wrist_x, right_wrist_y), 5, GREEN, -1)
-            cv2.putText(frame, "RIGHT WRIST", (right_wrist_x, right_wrist_y), 1, 1, (255, 255, 255), 2)
+            #cv2.circle(frame, (right_wrist_x, right_wrist_y), 5, GREEN, -1)
+            #cv2.putText(frame, "RIGHT WRIST", (right_wrist_x, right_wrist_y), 1, 1, (255, 255, 255), 2)
             
             # Dibuja un círculo en el codo izquierdo
-            cv2.circle(frame, (right_elbow_x, right_elbow_y), 5, GREEN, -1)
-            cv2.putText(frame, "LEFT ELBOW", (right_elbow_x, right_elbow_y), 1, 1, (255, 255, 255), 2)
+            #cv2.circle(frame, (right_elbow_x, right_elbow_y), 5, GREEN, -1)
+            #cv2.putText(frame, "LEFT ELBOW", (right_elbow_x, right_elbow_y), 1, 1, (255, 255, 255), 2)
             
             # Dibuja un círculo en el hombro izquierdo
-            cv2.circle(frame, (right_shoulder_x, right_shoulder_y), 5, GREEN, -1)
-            cv2.putText(frame, "LEFT SHOULDER", (right_shoulder_x, right_shoulder_y), 1, 1, (255, 255, 255), 2)
+            #cv2.circle(frame, (right_shoulder_x, right_shoulder_y), 5, GREEN, -1)
+            #cv2.putText(frame, "LEFT SHOULDER", (right_shoulder_x, right_shoulder_y), 1, 1, (255, 255, 255), 2)
             
             # linea para unir los puntos
-            cv2.line(frame, (right_shoulder_x, right_shoulder_y), (right_elbow_x, right_elbow_y), (0, 0, 255), 2)
-            cv2.line(frame, (right_elbow_x, right_elbow_y), (right_wrist_x, right_wrist_y), (0, 0, 255), 2)
+            #cv2.line(frame, (right_shoulder_x, right_shoulder_y), (right_elbow_x, right_elbow_y), (0, 0, 255), 2)
+            #cv2.line(frame, (right_elbow_x, right_elbow_y), (right_wrist_x, right_wrist_y), (0, 0, 255), 2)
 
         # Realiza la detección de la mano en el cuadro actual
         
@@ -224,27 +227,27 @@ with mp_pose.Pose(
 
                 # Comprueba si se levanta o baja el brazo derecho en función de la posición del hombro y la muñeca izquierda
                 if right_shoulder_y > right_wrist_y:
-                    cv2.putText(frame, "RAISED ARM", (220, 120), 1, 1, (255, 255, 255), 2)
+                    cv2.putText(frame, "ARM UP", (220, 120), 1, 1, (255, 255, 255), 2)
                     arm = 0
                 else:
                     cv2.putText(frame, "ARM DOWN", (220, 120), 1, 1, (255, 255, 255), 2)
                     arm = 1
-                mp_drawing.draw_landmarks(
-                    frame,
-                    left_hand_landmarks,
-                    mp_hands.HAND_CONNECTIONS,
-                    mp_drawing_styles.get_default_hand_landmarks_style(),
-                    mp_drawing_styles.get_default_hand_connections_style())
+                #mp_drawing.draw_landmarks(
+                #    frame,
+                #    left_hand_landmarks,
+                #    mp_hands.HAND_CONNECTIONS,
+                #    mp_drawing_styles.get_default_hand_landmarks_style(),
+                #    mp_drawing_styles.get_default_hand_connections_style())
                 
                 #comunicacion arduino
                 #ser.write(OC_hand)
                 #ser.write(turning_hand)
                 #ser.write(arm)  
-                #print(OC_hand, turning_hand, arm)
-
+                print(OC_hand, turning_hand, arm)
+                
         # Visualización
-        cv2.rectangle(frame, (0, 0), (80, 80), (125, 220, 0), -1)
-        cv2.putText(frame, fingers_counter, (15, 65), 1, 5, (255, 255, 255), 2)
+        #cv2.rectangle(frame, (0, 0), (80, 80), (125, 220, 0), -1)
+        #cv2.putText(frame, fingers_counter, (15, 65), 1, 5, (255, 255, 255), 2)
 
         # Muestra el cuadro de video
         cv2.imshow("BAAP", frame)
