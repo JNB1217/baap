@@ -1,0 +1,61 @@
+#include <Servo.h>
+
+Servo servoX; // Servo para el eje X
+Servo servoY; // Servo para el eje Y
+
+int joystickX;  // Almacena el valor del joystick en el eje X
+int joystickY;  // Almacena el valor del joystick en el eje Y
+int servoPosX = 90;  // Posición inicial del servo X a 90 grados
+int servoPosY = 90;  // Posición inicial del servo Y a 90 grados
+int servoSpeed = 2;  // Velocidad del servo (ajusta según tus necesidades)
+int servoDelay = 10; // Retardo no bloqueante
+
+void setup() {
+  servoX.attach(9); // Adjunta el servo X al pin 9
+  servoY.attach(10); // Adjunta el servo Y al pin 10
+}
+
+void loop() {
+  joystickX = analogRead(A0); // Lee el valor del joystick en el eje X
+  joystickY = analogRead(A1); // Lee el valor del joystick en el eje Y
+
+  // Control del servo X
+  if (joystickX < 470 || joystickX > 530) { // Detecta movimiento del joystick X (ajusta según tus necesidades)
+    int servoTargetX = map(joystickX, 0, 1023, 0, 180); // Mapea el valor del joystick X al rango de 0 a 180 grados
+
+    if (servoTargetX != servoPosX) {
+      if (servoTargetX > servoPosX) {
+        servoPosX += servoSpeed;
+      } else {
+        servoPosX -= servoSpeed;
+      }
+
+      if (abs(servoTargetX - servoPosX) < servoSpeed) {
+        servoPosX = servoTargetX;
+      }
+
+      servoX.write(servoPosX); // Mueve el servo X a la posición actual
+      delay(servoDelay); // Retardo no bloqueante
+    }
+  }
+
+  // Control del servo Y
+  if (joystickY < 470 || joystickY > 530) { // Detecta movimiento del joystick Y (ajusta según tus necesidades)
+    int servoTargetY = map(joystickY, 0, 1023, 0, 180); // Mapea el valor del joystick Y al rango de 0 a 180 grados
+
+    if (servoTargetY != servoPosY) {
+      if (servoTargetY > servoPosY) {
+        servoPosY += servoSpeed;
+      } else {
+        servoPosY -= servoSpeed;
+      }
+
+      if (abs(servoTargetY - servoPosY) < servoSpeed) {
+        servoPosY = servoTargetY;
+      }
+
+      servoY.write(servoPosY); // Mueve el servo Y a la posición actual
+      delay(servoDelay); // Retardo no bloqueante
+    }
+  }
+}
