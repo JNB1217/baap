@@ -5,8 +5,11 @@ import serial as ser
 import math as math
 from math import *
 import serial 
+import time
 
-ser = serial.Serial('COM21', baudrate=9600)
+ser = serial.Serial('COM8', baudrate=9600)
+# Inicializa un contador de tiempo
+last_send_time = time.time()
 
 # Inicializa las bibliotecas de MediaPipe para la mano y la pose del cuerpo
 mp_hands = mp.solutions.hands
@@ -175,24 +178,24 @@ with mp_pose.Pose(
                 arm = ()
                 
                 if not distance_head_thumb > distance_head_pink_tip:
-                    turning_hand = 1
+                    turning_hand = "1"
                     if fingers_positions == [1,1,1,1,1]:
                         cv2.putText(frame, "OPENING HAND", (220, 80), 1, 1, (255, 255, 255), 2)
-                        OC_hand = 1
+                        OC_hand = "1"
                     
                     if fingers_positions != [1,1,1,1,1]:
                         cv2.putText(frame, "CLOSING HAND", (220, 80), 1, 1, (255, 255, 255), 2)
-                        OC_hand = 0
+                        OC_hand = "0"
                 if distance_head_thumb > distance_head_pink_tip:
                     cv2.putText(frame, "TURNING HAND", (420, 80), 1, 1, (255, 255, 255), 2)
-                    turning_hand = 0
+                    turning_hand = "0"
                     if fingers_positions == [1,1,1,1,1]:
                         cv2.putText(frame, "OPENING HAND", (220, 80), 1, 1, (255, 255, 255), 2)
-                        OC_hand = 1
+                        OC_hand = "1"
                     
                     if fingers_positions != [1,1,1,1,1]:
                         cv2.putText(frame, "CLOSING HAND", (220, 80), 1, 1, (255, 255, 255), 2)
-                        OC_hand = 0
+                        OC_hand = "0"
                 pose_results = pose.process(frame_rgb)
                 
                 # Extrae los landmarks del hombro y la muñeca izquierda
@@ -208,18 +211,23 @@ with mp_pose.Pose(
                 # Comprueba si se levanta o baja el brazo derecho en función de la posición del hombro y la muñeca izquierda
                 if right_shoulder_y > right_wrist_y:
                     cv2.putText(frame, "RAISED ARM", (220, 120), 1, 1, (255, 255, 255), 2)
-                    arm = 0
+                    arm = "0"
                 else:
                     cv2.putText(frame, "ARM DOWN", (220, 120), 1, 1, (255, 255, 255), 2)
-                    arm = 1
+                    arm = "1"
                 
-                print(OC_hand, turning_hand, arm)
+                print((OC_hand + turning_hand ).encode('utf-8'))
                # ser.write(OC_hand)
                # Escribe los datos en el puerto serie
-                ser.write(bytes(str(OC_hand) + str(turning_hand) + str(arm), 'utf-8'))
+               # Envía datos al Arduino cada 10 segundos
+        current_time = time.time()
+        if current_time - last_send_time >= 2:  # Envia datos cada 0.1 segundos
+         ser.write((OC_hand + turning_hand).encode('utf-8'))
+         last_send_time = current_time
 
+                #print((OC_hand) + (turning_hand) + (arm))    
               # Cierra el puerto serie
-                #ser.close()
+        
         
 
         # Muestra el cuadro de video
@@ -227,7 +235,8 @@ with mp_pose.Pose(
         # Detiene el bucle cuando se presiona la tecla 'q'
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
-
+ser.close()
 # Libera la captura de video y cierra la ventana
+#ser.write(bytes(str(OC_hand) + str(turning_hand) + str(arm), 'utf-8'))
 cap.release()
 cv2.destroyAllWindows()
